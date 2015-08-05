@@ -2,9 +2,6 @@ var fs = require('fs'),
     http = require('http'),
     aws = require('aws-sdk');
 
-var express = require('express');
-var app = express();
-
 var conf = getConfig();
 
 if (conf) {
@@ -13,14 +10,12 @@ if (conf) {
 
   app.get('/', function (req, res) {
     var mds = new aws.MetadataService();
-    console.log('here');
     mds.request('/latest/dynamic/instance-identity/document',function(err,data){
       if(err){ 
         callback(err);  
         return; 
       }
       metadata = JSON.parse(data);
-      console.log('ehere');
     });
     res.send(metadata);
   });
@@ -47,8 +42,6 @@ function doRequest() {
     setTimeout(doRequest, conf.timeout * 1000);
   });
 }
-
-
 
 function configExists() {
   return fs.existsSync(__dirname + '/config');
