@@ -1,0 +1,10 @@
+{
+  "name": "availabilityChecker",
+  "description": "High Availability AWS Instance Checker",
+  "main": "index.js",  
+  "version": "0.0.1",
+  "dependencies": {
+    "express": ">= 3.3.0"
+  },
+  "engine": "node >= 0.10.30"
+}
