@@ -15,20 +15,24 @@ if (conf) {
 }
 
 function doRequest() {
+  var status = false;
   var options = {
     host: conf.host,
     path: '/'
   };
 
-  var req = http.request(options, function(res) {
-    console.log(options.host + ":" + res.statusCode);
-  });
+  var req = http.get('http://'+conf.host, function(res) {
+    var time = new Date();
 
-  req.on('error', function(err) {
-    console.log('Error during doRequest(), ' + err);
-  });
+    console.log(time.getTime() + " " + res.statusCode);
+    if (res.statusCode != 301) {
 
-  req.end();
+    }
+    else {
+
+    }
+    setTimeout(doRequest, conf.timeout * 1000);
+  });
 }
 
 function configExists() {
