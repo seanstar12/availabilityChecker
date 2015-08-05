@@ -1,0 +1,6 @@
+var config = module.exports = {
+  port : 8099,
+  host: somesite.com,
+  aws_key: false,
+  aws_secret : false
+}
