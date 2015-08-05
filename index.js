@@ -5,10 +5,13 @@ var fs = require('fs'),
 var conf = getConfig();
 
 if (conf) {
-  var metadata = null;
-  doRequest();
+  var metadata = null,
+      local_instanceId = null,
+      remote_instanceId = null,
+      num_remote_instances = 0;
 
-  app.get('/', function (req, res) {
+  //doRequest();
+
     var mds = new aws.MetadataService();
     mds.request('/latest/dynamic/instance-identity/document',function(err,data){
       if(err){ 
@@ -16,10 +19,22 @@ if (conf) {
         return; 
       }
       metadata = JSON.parse(data);
+      console.log(metadata);
+      
+      var as = new aws.AutoScaling({region:metadata.region});
+      as.describeAutoScalingInstances({ InstanceIds: [metadata.instanceId]}, function(err, data) {
+        console.log(data);
+        if (err){
+          //handle error
+        }
+        else if (data.AutoScalingInstances.length != 1 || data.AutoScalingInstances[0].AutoScalingGroupName == undefined) {
+          console.log('Instance does not belong to an AutoScaling Group');
+        }
+        else {
+          console.log(data.AutoScalingInstances[0]);
+        }
+      });
     });
-    res.send(metadata);
-  });
-  app.listen(conf.port);
 }
 
 function doRequest() {
