@@ -28,7 +28,20 @@ _getMetaData()
 .then(mainLoop);
 
 
+function mainLoop() {
+  console.log('entering main loop');
+  setTimeout(function() {
+    _check_other_instances()
+    .then(function(data){
+      console.log(data); 
+    });
+
+    mainLoop();
+  },5 * 1000);
+}
+
 function _getMaster() {
+  console.log('entering _getMaster');
   // compare the instances with the master ip and set if master
   if (aws_info.current == aws_info.net_info.InstanceId) {
     aws_info.is_master = true;
@@ -43,6 +56,7 @@ function _getMaster() {
 }
 
 function _getIpInfo() {
+  console.log('entering _getIpInfo');
   // Get the elastic IP of the master here
   var deferred = Q.defer();
   var ec2 = new aws.EC2({region: aws_info.region}); 
@@ -63,6 +77,7 @@ function _getIpInfo() {
 }
 
 function _getAutoScaling(metaData) {
+  console.log('entering _getAutoScaling');
   var deferred = Q.defer();
   var instances = [];
   var local_instance = null;
@@ -104,6 +119,7 @@ function _getAutoScaling(metaData) {
   return deferred.promise;
 }
 function _getMetaData() {
+  console.log('entering _getMetaData');
   var deferred = Q.defer();
   var mds = new aws.MetadataService();
 
@@ -113,7 +129,6 @@ function _getMetaData() {
       deferred.reject(new Error(error));
     }
     else {
-      console.log('got metatdata');
       deferred.resolve(JSON.parse(data));
     }
   });
@@ -121,7 +136,7 @@ function _getMetaData() {
 };
 
 function _check_other_instances() {
-  console.log('entering check_other_instances');
+  console.log('  _check_other_instances');
   var deferred = Q.defer();
   if (!aws_info.is_master) {
     aws_info.instances.forEach(function(instance) {
@@ -145,18 +160,6 @@ function _check_other_instances() {
     });
   }
   return deferred.promise;
-}
-
-function mainLoop() {
-  console.log('entering main loop');
-  setTimeout(function() {
-    _check_other_instances()
-    .then(function(data){
-      console.log(data); 
-    });
-
-    mainLoop();
-  },5 * 1000);
 }
 
 function _remove_elastic_ip() {
@@ -230,3 +233,4 @@ function doRequest() {
 
   return deferred.promise;
 }
+
